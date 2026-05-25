@@ -1,18 +1,26 @@
-version: '3.9'
-
 services:
-  db:
+  postgres:
     image: postgres:15
-    container_name: postgres_db
-    restart: always
+    container_name: ness_soft_db
     environment:
-      POSTGRES_USER: ness_soft
-      POSTGRES_PASSWORD: 1234
       POSTGRES_DB: ness_soft
+      POSTGRES_USER: ness_soft
+      POSTGRES_PASSWORD: "1234"
     ports:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    networks:
+      - ness_soft_network
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U ness_soft" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
 volumes:
   postgres_data:
+
+networks:
+  ness_soft_network:
+    driver: bridge
